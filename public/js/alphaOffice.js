@@ -53,32 +53,31 @@ var tweetTableTemplateVar;
 // $(".uploadForm").submit((function(e) {
 function uploadImage(event) {
     // e.preventDefault(); // avoid to execute the actual submit of the form.
-     $('#image-uploader').append('<img src="Images/ajax-loader.gif"/>');
+    $('#image-uploader').append('<img src="Images/ajax-loader.gif"/>');
     var url = "upload"; // the script where you handle the form input
     var data = new FormData();
     data.append('sampleFile', event.target.files[0]);
 
     $.ajax({
-           type: "POST",
-           url: url,
-           data: data, // serializes the form's elements.
-           processData: false, // Don't process the files
-           contentType: false,
-           cache: false,
-           success: function(data)
-           {
-             var image = document.createElement("img");
-             image.src = 'data:image/png;base64,'+data;
-             $('#image-uploader > img').remove();
-             $('#image-uploader > h4').remove();
-             $('#image-uploader').append(image);
-           },
-           error: function(err) {
-             $('#image-uploader > img').remove();
-             $('#image-uploader > h4').remove();
-             $('#image-uploader').append('<h4>There was an error communicating with the thumbnail service.</h4>')
-           }
-         });
+        type: "POST",
+        url: url,
+        data: data, // serializes the form's elements.
+        processData: false, // Don't process the files
+        contentType: false,
+        cache: false,
+        success: function (data) {
+            var image = document.createElement("img");
+            image.src = 'data:image/png;base64,' + data;
+            $('#image-uploader > img').remove();
+            $('#image-uploader > h4').remove();
+            $('#image-uploader').append(image);
+        },
+        error: function (err) {
+            $('#image-uploader > img').remove();
+            $('#image-uploader > h4').remove();
+            $('#image-uploader').append('<h4>There was an error communicating with the thumbnail service.</h4>')
+        }
+    });
 
 
 };
@@ -92,16 +91,16 @@ $(document).ready(function () {
     }
     // Call REST service Node.js accessing MySQL product data.
     $.getJSON(dbServiceURL, function (data) {
-        try{
-            holder =data;
+        try {
+            holder = data;
             buildHTML();
         }
-        catch(err){
+        catch (err) {
             console.log("Error retrieving the Product data from the JSON Endpoint.");
         }
     });
 
-// Build HTML from the JSON Feed.
+    // Build HTML from the JSON Feed.
     // Create a template for the product panels.  There are 4 product panels per row on the main page.  In order have the popup panel used in the animation look identical to the
     // product panels, the product panel template is extracted from the popup panel.  The template is contained in popupHTLMArray[0] and popupHTLMArray[1].
     // The generic template is created by removing syntax specific to the popup panel.
@@ -109,14 +108,14 @@ $(document).ready(function () {
         var i;
         var j;
         //Get deployment color from twitter feed and update title bar
-        $.get('color', function(color) {
-          if( color == 'blue' || color == 'green') {
-            $('#podColor').text('Served by a ' + color + ' pod');
-            if (color == 'blue')
-                $('#podColor').css('color', 'blue');
-            else
-                $('#podColor').css('color', 'lightgreen');
-          }
+        $.get('color', function (color) {
+            if (color == 'blue' || color == 'green') {
+                //$('#podColor').text('Served by a ' + color + ' pod');
+                if (color == 'blue')
+                    $('#title').css('color', 'blue');
+                else
+                    $('#title').css('color', 'lightgreen');
+            }
         });
 
         tweetTableTemplateVar = document.getElementById("tweetTableFillerDiv").innerHTML; // To be used later for formatting Tweet data in the popup
@@ -129,42 +128,44 @@ $(document).ready(function () {
         indexVar = 0;
 
         try {
-        //Loop through JSON and populate productArray.
-        $.each(holder.Products, function(index, details) {
-            productArray[details.PRODUCT_ID] = {parent_category_id: details.PARENT_CATEGORY_ID, category_id: details.CATEGORY_ID,
-                product_name: details.PRODUCT_NAME, product_status: details.PRODUCT_STATUS, list_price: details.LIST_PRICE,
-                warranty_period_months: details.WARRANTY_PERIOD_MONTHS, external_url: details.EXTERNAL_URL, hashtag: details.TWITTER_TAG};
-            productIndexArray[indexVar] = details.PRODUCT_ID;
-            indexVar = indexVar + 1;
-        });
-        // Create table HTML from productArray.
-        var columnNumberConst = 4;
-        var tableVar = "<table id=\"allTable\" style=\"border-spacing:0px\">";
-        for (i = 0; i < productIndexArray.length; i++) {
-            if (i % columnNumberConst == 0) {
-                tableVar = tableVar + "<tr>";
-            }
-            tableVar = tableVar + "<td class=\"productTd\"><table id=\"PROD" + productIndexArray[i] + "\" onclick=\"selectProduct(" +
-                productIndexArray[i] + ")\" class=\"popupTable\">" + popupHTLMArray[0] +
-                innerProductPanelHTML(productIndexArray[i], true) +
-                popupHTLMArray[1] + "</table></td>";
-            if (i == (productIndexArray.length - 1)) {
-                for (j = 0; j < (columnNumberConst - i % columnNumberConst - 1); j++) {
-                    tableVar = tableVar + "<td>&nbsp;</td>";
+            //Loop through JSON and populate productArray.
+            $.each(holder.Products, function (index, details) {
+                productArray[details.PRODUCT_ID] = {
+                    parent_category_id: details.PARENT_CATEGORY_ID, category_id: details.CATEGORY_ID,
+                    product_name: details.PRODUCT_NAME, product_status: details.PRODUCT_STATUS, list_price: details.LIST_PRICE,
+                    warranty_period_months: details.WARRANTY_PERIOD_MONTHS, external_url: details.EXTERNAL_URL, hashtag: details.TWITTER_TAG
+                };
+                productIndexArray[indexVar] = details.PRODUCT_ID;
+                indexVar = indexVar + 1;
+            });
+            // Create table HTML from productArray.
+            var columnNumberConst = 4;
+            var tableVar = "<table id=\"allTable\" style=\"border-spacing:0px\">";
+            for (i = 0; i < productIndexArray.length; i++) {
+                if (i % columnNumberConst == 0) {
+                    tableVar = tableVar + "<tr>";
                 }
-                tableVar = tableVar + "</tr>";
-            } else if (i % columnNumberConst == (columnNumberConst - 1)) {
-                tableVar = tableVar + "</tr>";
+                tableVar = tableVar + "<td class=\"productTd\"><table id=\"PROD" + productIndexArray[i] + "\" onclick=\"selectProduct(" +
+                    productIndexArray[i] + ")\" class=\"popupTable\">" + popupHTLMArray[0] +
+                    innerProductPanelHTML(productIndexArray[i], true) +
+                    popupHTLMArray[1] + "</table></td>";
+                if (i == (productIndexArray.length - 1)) {
+                    for (j = 0; j < (columnNumberConst - i % columnNumberConst - 1); j++) {
+                        tableVar = tableVar + "<td>&nbsp;</td>";
+                    }
+                    tableVar = tableVar + "</tr>";
+                } else if (i % columnNumberConst == (columnNumberConst - 1)) {
+                    tableVar = tableVar + "</tr>";
+                }
             }
-        }
-        tableVar = tableVar.replace(/\(R\)/g, "&reg;");
-        tableVar = tableVar.replace(/[^\x00-\x7F]/g, "");
-        tableVar = tableVar + "</table>";
+            tableVar = tableVar.replace(/\(R\)/g, "&reg;");
+            tableVar = tableVar.replace(/[^\x00-\x7F]/g, "");
+            tableVar = tableVar + "</table>";
 
-        // Write table HTML to productDiv.
-        document.getElementById("productDiv").innerHTML = tableVar;
+            // Write table HTML to productDiv.
+            document.getElementById("productDiv").innerHTML = tableVar;
         }
-        catch(err){
+        catch (err) {
             console.log("Error parsing the data in the JSON file: " + err);
         }
     }
@@ -175,24 +176,24 @@ function innerProductPanelHTML(indexParam, cache) {
     // call price service to get price.  we only get the price from the price service
     // on individual product details.  we use the locally cached catalog on initial load.
     var price = "0.00"
-    if(!cache) {
+    if (!cache) {
         $.ajax({
             url: priceServiceBaseURL + "/" + indexParam,
             dataType: 'json',
             async: false,
-            success: function(json) {
-                holder=json;
+            success: function (json) {
+                holder = json;
             }
-            });
+        });
         price = holder.price;
-    } 
+    }
     else {
         price = displayPrice(productArray[indexParam].list_price);
     }
-  
+
     // write the price UI
     var htmlVar = "<img src=\"" + productArray[indexParam].external_url +
-            "\" class=\"productImage\"><div class=\"productNameDiv\">" + productArray[indexParam].product_name + "</div>Price: $" + price +  ""
+        "\" class=\"productImage\"><div class=\"productNameDiv\">" + productArray[indexParam].product_name + "</div>Price: $" + price + ""
     return htmlVar;
 }
 
@@ -228,7 +229,7 @@ function selectProduct(idParm) {
     startTopVar = offsetVar.top;
     startLeftVar = offsetVar.left;
     endTopVar = popupTopVar + $(document).scrollTop();
-    endLeftVar = ($('body').innerWidth() - popupObjVar.offsetWidth)/2 + $(document).scrollLeft();
+    endLeftVar = ($('body').innerWidth() - popupObjVar.offsetWidth) / 2 + $(document).scrollLeft();
     selectedObjVar.style.visibility = "hidden";
     modeVar = "EXPAND";
     startTransitionPosition();
@@ -283,10 +284,10 @@ function transitionPosition() {
     popupObjVar.style.top = currentTopVar + "px";
     popupObjVar.style.left = currentLeftVar + "px";
     if (transitionIndexVar < transitionPositionStepsVar) {
-        currentTopVar = currentTopVar + (totalVerticalVar * (incrementFactorArray[transitionIndexVar]/incrementFactorSumVar));
-        currentLeftVar = currentLeftVar + (totalHorizontalVar * (incrementFactorArray[(transitionPositionStepsVar - transitionIndexVar - 1)]/incrementFactorSumVar));
+        currentTopVar = currentTopVar + (totalVerticalVar * (incrementFactorArray[transitionIndexVar] / incrementFactorSumVar));
+        currentLeftVar = currentLeftVar + (totalHorizontalVar * (incrementFactorArray[(transitionPositionStepsVar - transitionIndexVar - 1)] / incrementFactorSumVar));
         transitionIndexVar = transitionIndexVar + 1;
-        setTimeout(function(){ transitionPosition(); }, transitionIntervalVar);
+        setTimeout(function () { transitionPosition(); }, transitionIntervalVar);
     }
     else {
         if (modeVar == "EXPAND") {
@@ -314,11 +315,11 @@ function transitionSize() {
         currentWidthVar = currentWidthVar + (2 * widthIncrementVar);
         currentHeightVar = Math.min((currentHeightVar + heightIncrementVar), (popupTwitterContentHeightVar - document.getElementById("popupProductContentDiv").offsetHeight));
         transitionIndexVar = transitionIndexVar + 1;
-        setTimeout(function(){ transitionSize(); }, transitionIntervalVar);
+        setTimeout(function () { transitionSize(); }, transitionIntervalVar);
     }
     else {
         document.getElementById("popupTwitterContentTd").innerHTML = "<table style=\"width:100%\"><td style=\"width:100%\"><div id=\"popupTwitterContentDiv\">" +
-        "</div></td><td><img src=\"Images/spacer.png\" style=\"width:10px;visibility:hidden;\" /></td></table>";
+            "</div></td><td><img src=\"Images/spacer.png\" style=\"width:10px;visibility:hidden;\" /></td></table>";
         document.getElementById("popupTwitterContentDiv").style.height = popupTwitterContentHeightVar + "px";
         document.getElementById("popupControlTd").innerHTML = document.getElementById("popupControlTdFillerDiv").innerHTML;
         transitionCompletedVar = true;
@@ -346,7 +347,7 @@ function hidePopup() {
 function getOffset(el) {
     var _x = 0;
     var _y = 0;
-    while( el && !isNaN( el.offsetLeft ) && !isNaN( el.offsetTop ) ) {
+    while (el && !isNaN(el.offsetLeft) && !isNaN(el.offsetTop)) {
         _x += el.offsetLeft; // - el.scrollLeft;
         _y += el.offsetTop; // - el.scrollTop;
         el = el.offsetParent;
@@ -364,11 +365,11 @@ var twitterArray;
 function getTwitter(harshtagParm) {
     twitterArray = new Array();
     $.getJSON(tweetServiceBaseURL + "/%23" + harshtagParm, function (data) {
-        try{
-            holder =data;
+        try {
+            holder = data;
             buildTwitterArray();
         }
-        catch(err){
+        catch (err) {
             console.log("Error retrieving the Product data from the JSON Endpoint.")
         }
     });
@@ -379,32 +380,34 @@ function getTwitter(harshtagParm) {
     function buildTwitterArray() {
         indexVar = 0;
         // Loop through all the JSON Twitter records returned by the Twitter REST service
-        $.each(holder.tweets, function(index, details) {
+        $.each(holder.tweets, function (index, details) {
             if (details.text) {
                 var dateSortString = details.timestamp_ms;
                 var theDate = new Date(parseInt(details.timestamp_ms));
                 var month = monthArray[theDate.getMonth()];
-                var hour = theDate.getHours(); if((hour<7)&&(theDate.getMinutes()<50)){hour=hour+9;dateSortString=(dateSortString*1)+32400000;}
-                var ampmVar = ampmArray[Math.floor(hour/12)];
-                hour = hour%12; if (hour == 0) {hour = 12;}
+                var hour = theDate.getHours(); if ((hour < 7) && (theDate.getMinutes() < 50)) { hour = hour + 9; dateSortString = (dateSortString * 1) + 32400000; }
+                var ampmVar = ampmArray[Math.floor(hour / 12)];
+                hour = hour % 12; if (hour == 0) { hour = 12; }
                 var minute = "0" + theDate.getMinutes(); minute = minute.substr(-2);
                 var dateString = hour + ":" + minute + " " + ampmVar + " - " + month + " " +
                     theDate.getDate() + ", " + theDate.getFullYear();
-                 var iVar = details.id_str;var rpVar=iVar.charAt(2)%3;var rtVar=iVar.charAt(4)%2;var lVar=iVar.charAt(6)%5;
-                    if(rpVar==0){rpVar=" ";}if(rtVar==0){rtVar=" ";}if(lVar==0){lVar=" ";}
+                var iVar = details.id_str; var rpVar = iVar.charAt(2) % 3; var rtVar = iVar.charAt(4) % 2; var lVar = iVar.charAt(6) % 5;
+                if (rpVar == 0) { rpVar = " "; } if (rtVar == 0) { rtVar = " "; } if (lVar == 0) { lVar = " "; }
                 // Load the twitterArray with data from the Twitter REST service.  Also create a starting value for the tweetHTML string based on a previously loaded tweetTableTemplateVar.
-                twitterArray[indexVar] = {screenName: details.user.screen_name.trim(), name: details.user.name.trim(),  tweetText: formatTweetText(details.text),
-                     tweetTimestamp: dateSortString, tweetDate: dateString, id_str: details.id_str, tweetHTML: tweetTableTemplateVar};
+                twitterArray[indexVar] = {
+                    screenName: details.user.screen_name.trim(), name: details.user.name.trim(), tweetText: formatTweetText(details.text),
+                    tweetTimestamp: dateSortString, tweetDate: dateString, id_str: details.id_str, tweetHTML: tweetTableTemplateVar
+                };
                 // Replace placeholders in the tweetHTML string with specific values for the Tweet record.
-                twitterArray[indexVar].tweetHTML =  twitterArray[indexVar].tweetHTML.replace("~NAME~", twitterArray[indexVar].name);
-                twitterArray[indexVar].tweetHTML =  twitterArray[indexVar].tweetHTML.replace("~SCREENNAME~", "<a href=\"https://twitter.com/" +
+                twitterArray[indexVar].tweetHTML = twitterArray[indexVar].tweetHTML.replace("~NAME~", twitterArray[indexVar].name);
+                twitterArray[indexVar].tweetHTML = twitterArray[indexVar].tweetHTML.replace("~SCREENNAME~", "<a href=\"https://twitter.com/" +
                     twitterArray[indexVar].screenName + "\" class=\"tweetScreennameLink\" target=\"_blank\" >@" + twitterArray[indexVar].screenName + "</a>");
-                twitterArray[indexVar].tweetHTML =  twitterArray[indexVar].tweetHTML.replace("~FOLLOWSCREENNAME~", twitterArray[indexVar].screenName);
-                twitterArray[indexVar].tweetHTML =  twitterArray[indexVar].tweetHTML.replace("~TEXT~", twitterArray[indexVar].tweetText);
-                twitterArray[indexVar].tweetHTML =  twitterArray[indexVar].tweetHTML.replace("~DATE~", twitterArray[indexVar].tweetDate);
-                twitterArray[indexVar].tweetHTML =  twitterArray[indexVar].tweetHTML.replace("~REPLIES~", "<input type=\"text\" readonly value=\"" + rpVar + "\" />");
-                twitterArray[indexVar].tweetHTML =  twitterArray[indexVar].tweetHTML.replace("~RETWEETS~", "<input type=\"text\" readonly value=\"" + rtVar + "\" />");
-                twitterArray[indexVar].tweetHTML =  twitterArray[indexVar].tweetHTML.replace("~LIKES~", "<input type=\"text\" readonly value=\"" + lVar + "\" />");
+                twitterArray[indexVar].tweetHTML = twitterArray[indexVar].tweetHTML.replace("~FOLLOWSCREENNAME~", twitterArray[indexVar].screenName);
+                twitterArray[indexVar].tweetHTML = twitterArray[indexVar].tweetHTML.replace("~TEXT~", twitterArray[indexVar].tweetText);
+                twitterArray[indexVar].tweetHTML = twitterArray[indexVar].tweetHTML.replace("~DATE~", twitterArray[indexVar].tweetDate);
+                twitterArray[indexVar].tweetHTML = twitterArray[indexVar].tweetHTML.replace("~REPLIES~", "<input type=\"text\" readonly value=\"" + rpVar + "\" />");
+                twitterArray[indexVar].tweetHTML = twitterArray[indexVar].tweetHTML.replace("~RETWEETS~", "<input type=\"text\" readonly value=\"" + rtVar + "\" />");
+                twitterArray[indexVar].tweetHTML = twitterArray[indexVar].tweetHTML.replace("~LIKES~", "<input type=\"text\" readonly value=\"" + lVar + "\" />");
                 indexVar = indexVar + 1;
             }
         });
@@ -422,10 +425,10 @@ function buildTwitterHTML(sortParm) {
     var tweetSortArray = new Array();
     var tweetString = "";
     for (i = 0; i < twitterArray.length; i++) {
-        if (sortParm == 1) {sortHiddenStringVar = twitterArray[i].screenName.toUpperCase();}
-        if (sortParm == 2) {sortHiddenStringVar = twitterArray[i].tweetText.toUpperCase();}
-        if (sortParm == 3) {sortHiddenStringVar = twitterArray[i].tweetTimestamp;}
-        tweetSortArray[i] = sortHiddenStringVar + "^*^" +  twitterArray[i].tweetHTML;
+        if (sortParm == 1) { sortHiddenStringVar = twitterArray[i].screenName.toUpperCase(); }
+        if (sortParm == 2) { sortHiddenStringVar = twitterArray[i].tweetText.toUpperCase(); }
+        if (sortParm == 3) { sortHiddenStringVar = twitterArray[i].tweetTimestamp; }
+        tweetSortArray[i] = sortHiddenStringVar + "^*^" + twitterArray[i].tweetHTML;
     }
     tweetSortArray.sort();
     for (i = 0; i < twitterArray.length; i++) {
@@ -446,7 +449,7 @@ function formatTweetText(stringParm) {
     var hrefVar;
     var tweetFirstArray;
     var tweetSecondArray = new Array();
-    function secondArrayObj () {
+    function secondArrayObj() {
         var linkString = "";
         var textString = "";
     }
@@ -467,8 +470,8 @@ function formatTweetText(stringParm) {
         locationVar = tweetFirstArray[j].indexOf(' ');
         tweetSecondArray[j].linkString = tweetFirstArray[j].substr(0, locationVar);
         tweetSecondArray[j].textString = tweetFirstArray[j].substr(locationVar);
-        if ((tweetSecondArray[j].linkString.slice(-1) == ".")||(tweetSecondArray[j].linkString.slice(-1) == "?")||(tweetSecondArray[j].linkString.slice(-1) == "!")||
-            (tweetSecondArray[j].linkString.slice(-1) == ",")||(tweetSecondArray[j].linkString.slice(-1) == ")")) {
+        if ((tweetSecondArray[j].linkString.slice(-1) == ".") || (tweetSecondArray[j].linkString.slice(-1) == "?") || (tweetSecondArray[j].linkString.slice(-1) == "!") ||
+            (tweetSecondArray[j].linkString.slice(-1) == ",") || (tweetSecondArray[j].linkString.slice(-1) == ")")) {
             tweetSecondArray[j].textString = tweetSecondArray[j].linkString.slice(-1) + tweetSecondArray[j].textString;
             tweetSecondArray[j].linkString = tweetSecondArray[j].linkString.substr(0, (tweetSecondArray[j].linkString.length - 1));
         }
@@ -502,24 +505,24 @@ function formatTweetText(stringParm) {
     }
     tweetVar = tweetFirstArray[0];
     for (j = 1; j < tweetSecondArray.length; j++) {
-        tweetVar = tweetVar + tweetSecondArray[j].linkString +  tweetSecondArray[j].textString;
+        tweetVar = tweetVar + tweetSecondArray[j].linkString + tweetSecondArray[j].textString;
     }
     return tweetVar.trim();
 }
 
-function getBrowser(){
-    var ua= navigator.userAgent, tem,
-    M= ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
-    if(/trident/i.test(M[1])){
-        tem=  /\brv[ :]+(\d+)/g.exec(ua) || [];
+function getBrowser() {
+    var ua = navigator.userAgent, tem,
+        M = ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
+    if (/trident/i.test(M[1])) {
+        tem = /\brv[ :]+(\d+)/g.exec(ua) || [];
         return 'IE';
     }
     else {
-        if(M[1]=== 'Chrome'){
-            tem= ua.match(/\b(OPR|Edge)\/(\d+)/);
+        if (M[1] === 'Chrome') {
+            tem = ua.match(/\b(OPR|Edge)\/(\d+)/);
         }
-        M= M[2]? [M[1], M[2]]: [navigator.appName, navigator.appVersion, '-?'];
-        if((tem= ua.match(/version\/(\d+)/i))!= null) M.splice(1, 1, tem[1]);
+        M = M[2] ? [M[1], M[2]] : [navigator.appName, navigator.appVersion, '-?'];
+        if ((tem = ua.match(/version\/(\d+)/i)) != null) M.splice(1, 1, tem[1]);
         return M[0];
     }
 }
