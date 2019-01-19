@@ -110,11 +110,11 @@ $(document).ready(function () {
         //Get deployment color from twitter feed and update title bar
         $.get('color', function (color) {
             if (color == 'blue' || color == 'green') {
-                //$('#podColor').text('Served by a ' + color + ' pod');
+                // $('#podColor').text('Served by a ' + color + ' pod');
                 if (color == 'blue')
-                    $('#title').css('color', 'blue');
+                    $('#title').css('background-color', 'blue');
                 else
-                    $('#title').css('color', 'lightgreen');
+                    $('#title').css('background-color', 'lightgreen');
             }
         });
 
