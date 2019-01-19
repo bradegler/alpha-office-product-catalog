@@ -112,9 +112,9 @@ $(document).ready(function () {
             if (color == 'blue' || color == 'green') {
                 // $('#podColor').text('Served by a ' + color + ' pod');
                 if (color == 'blue')
-                    $('#title').css('background-color', 'blue');
+                    $('#title').css('background-color', '#2196f3');
                 else
-                    $('#title').css('background-color', 'lightgreen');
+                    $('#title').css('background-color', '#81c784');
             }
         });
 
